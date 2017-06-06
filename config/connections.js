@@ -82,6 +82,14 @@ module.exports.connections = {
   //   database: 'YOUR_POSTGRES_DB' //optional
   // }
 
+  inventoryDb: {
+    adapter: 'sails-postgresql',
+    host: '127.0.0.1',
+    user: 'postgres', // optional
+    password: 'M!ndstrength', // optional
+    database: 'inventory' //optional
+  }
+
 
   /***************************************************************************
   *                                                                          *

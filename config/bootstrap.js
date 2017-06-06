@@ -13,5 +13,30 @@ module.exports.bootstrap = function(cb) {
 
   // It's very important to trigger this callback method when you are finished
   // with the bootstrap!  (otherwise your server will never lift, since it's waiting on the bootstrap)
-  cb();
+
+  Users.count().exec(function(err, usersCount) {
+    if (usersCount === 0) {
+
+      console.log("Initializing the Database ...");
+
+      var default_user = {
+        "first_name": "Inventory",
+        "last_name": "Manager",
+        "username": "inventory",
+        "email": "",
+        "password": "inventory@123"
+      };
+
+      Users.create(default_user).then(user => {
+        console.log("Successfully Created the New User");
+        cb();
+      }).catch(err => {
+        console.log("Error in setting up the system!");
+      })
+
+    } else {
+      cb();
+    }
+  })
+  
 };
