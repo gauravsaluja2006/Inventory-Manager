@@ -25,11 +25,6 @@ module.exports = {
       required: true
     },
 
-    // code: {
-    //   type: 'string',
-    //   required: true
-    // },
-
     quantity: {
       type: 'integer',
       required: false,
@@ -42,13 +37,22 @@ module.exports = {
       defaultsTo: 0
     },
 
-    // QUANTITY TYPE - PIECE / CARTON / KG / POUND / BOX / CASE 
-
     type: {
       model: 'producttype',
       required: true
     }
 
+  },
+
+  validationMessages: {
+    name: {
+      type: 'Please enter a valid Product Name',
+      required: 'Please enter a valid Product Name'
+    },
+    description: {
+      type: 'Please enter Product Description',
+      required: 'Please enter Product Description'
+    },
   }
 };
 

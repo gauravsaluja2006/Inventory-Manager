@@ -25,6 +25,17 @@ module.exports = {
       collection: "product",
       via: "type"
     }
+  },
+
+  validationMessages: {
+    name: {
+      type: 'Please enter a valid Product Name',
+      required: 'Please enter a valid Product Name'
+    },
+    description: {
+      type: 'Please enter Product Description',
+      required: 'Please enter Product Description'
+    },
   }
 };
 

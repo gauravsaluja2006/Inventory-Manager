@@ -9,6 +9,8 @@ module.exports = {
     login: login
 };
 
+let bcrypt = require('bcrypt');
+
 function login(req, res) {
 
     var returnObject = {
