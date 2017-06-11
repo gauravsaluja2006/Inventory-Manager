@@ -6,7 +6,8 @@
  */
 
 module.exports = {
-	createNewProduct: createNewProduct
+	createNewProduct: createNewProduct,
+    getAllProductList: getAllProductList
 };
 
 // FUNCTION TO HANDLE REQUEST TO CREATE A NEW PRODUCT
@@ -66,7 +67,9 @@ function createNewProduct(req, res) {
 
     var product_name = req.body.name.trim();
     var product_description = req.body.description.trim();
+    console.log("REQ: ", req.body);
     var quantity = parseInt(req.body.quantity) || 0;
+    console.log("GOT QUANTITY: ", quantity);
     var minimum_quantity = parseInt(req.body.minimum_quantity) || 0;
     var product_type = parseInt(req.body.type);
 
@@ -124,4 +127,22 @@ function createNewProduct(req, res) {
 
     })
 
+}
+
+function getAllProductList(req, res) {
+
+    returnObject = {
+        products: []
+    }
+
+    Product.find().populate('type').exec(function(err, products) {
+
+        products.forEach(function(product) {
+            product.type = product.type.name
+        });
+
+        returnObject.products = products;
+        return res.json(returnObject);
+        
+    })
 }

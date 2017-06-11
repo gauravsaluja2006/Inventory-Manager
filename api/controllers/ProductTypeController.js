@@ -6,7 +6,8 @@
  */
 
 module.exports = {
-	createNewProductType: createNewProductType
+	createNewProductType: createNewProductType,
+    getAllProductTypeList: getAllProductTypeList
 };
 
 // FUNCTION TO HANDLE REQUEST TO CREATE A NEW PRODUCT TYPE
@@ -89,5 +90,20 @@ function createNewProductType(req, res) {
             return res.json(returnObject);
         
         }
+    })
+}
+
+
+function getAllProductTypeList(req, res) {
+
+    returnObject = {
+        productTypes: []
+    }
+
+    ProductType.find().exec(function(err, productTypes) {
+
+        returnObject.productTypes = productTypes;
+        return res.json(returnObject);
+        
     })
 }

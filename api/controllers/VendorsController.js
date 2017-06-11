@@ -6,7 +6,8 @@
  */
 
 module.exports = {
-	createNewVendor: createNewVendor
+	getAllVendorsList: getAllVendorsList,
+    createNewVendor: createNewVendor
 };
 
 // FUNCTION TO HANDLE REQUEST TO CREATE A NEW PRODUCT TYPE
@@ -27,7 +28,7 @@ function createNewVendor(req, res) {
     
 
     // MESSAGES
-    var VENDOR_CREATED_SUCCESS_MESSAGE = "Product Type Created Successfully";
+    var VENDOR_CREATED_SUCCESS_MESSAGE = "New Vendor Created Successfully";
     var SERVER_ERROR_MESSAGE = "Some error occured";
     var MISSING_VENDOR_NAME_MESSAGE = "Please provide a name for the Vendor";
     
@@ -46,7 +47,8 @@ function createNewVendor(req, res) {
     
     // CREATING NEW PRODUCT TYPE
     Vendors.create({
-        'name': vendor_name
+        'name': vendor_name,
+        'phone': req.body.phone
     }).exec(function(err, newVendor) {
 
         // ERROR IN CREATION
@@ -75,5 +77,19 @@ function createNewVendor(req, res) {
             return res.json(returnObject);
         
         }
+    })
+}
+
+function getAllVendorsList(req, res) {
+
+    returnObject = {
+        vendors: []
+    }
+
+    Vendors.find().exec(function(err, vendors) {
+
+        returnObject.vendors = vendors;
+        return res.json(returnObject);
+        
     })
 }
