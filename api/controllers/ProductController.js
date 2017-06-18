@@ -67,9 +67,7 @@ function createNewProduct(req, res) {
 
     var product_name = req.body.name.trim();
     var product_description = req.body.description.trim();
-    console.log("REQ: ", req.body);
     var quantity = parseInt(req.body.quantity) || 0;
-    console.log("GOT QUANTITY: ", quantity);
     var minimum_quantity = parseInt(req.body.minimum_quantity) || 0;
     var product_type = parseInt(req.body.type);
 
@@ -92,8 +90,8 @@ function createNewProduct(req, res) {
             'description': product_description,
             'quantity': quantity,
             'minimum_quantity': minimum_quantity,
-            'type': product_type
-            //'created_by': req.token.id
+            'type': product_type,
+            'created_by': req.token.id
         }).exec(function(err, newProduct) {
 
             // ERROR IN CREATION

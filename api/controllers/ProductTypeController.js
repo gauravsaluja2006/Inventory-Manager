@@ -60,7 +60,7 @@ function createNewProductType(req, res) {
     ProductType.create({
         'name': product_type_name,
         'description': product_type_description,
-        //'created_by': req.token.id
+        'created_by': req.token.id
     }).exec(function(err, newProductType) {
 
         // ERROR IN CREATION

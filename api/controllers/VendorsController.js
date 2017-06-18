@@ -48,7 +48,8 @@ function createNewVendor(req, res) {
     // CREATING NEW PRODUCT TYPE
     Vendors.create({
         'name': vendor_name,
-        'phone': req.body.phone
+        'phone': req.body.phone,
+        'created_by': req.token.id
     }).exec(function(err, newVendor) {
 
         // ERROR IN CREATION

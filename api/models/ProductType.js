@@ -24,6 +24,10 @@ module.exports = {
     products: {
       collection: "product",
       via: "type"
+    },
+    created_by: {
+      model: 'users',
+      required: true
     }
   },
 

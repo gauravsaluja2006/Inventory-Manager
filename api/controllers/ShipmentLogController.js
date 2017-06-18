@@ -32,6 +32,7 @@ function logShipment(req, res) {
     var INVALID_PRODUCT_ID_CODE = 6;
     var INVALID_VENDOR_ID_CODE = 7;
     var INVALID_QUANTITY_CODE = 8;
+    var QUANTITY_NOT_AVAILABLE_CODE = 9;
 
     // MESSAGES
     var SHIPMENT_LOGGED_SUCCESSFULLY_MESSAGE = "Product Shipment Logged Successfully";
@@ -42,6 +43,7 @@ function logShipment(req, res) {
     var INVALID_PRODUCT_ID_MESSAGE = "Product with given ID does not exist";
     var INVALID_VENDOR_ID_MESSAGE = "Vendor with given ID does not exist";
     var INVALID_QUANTITY_MESSAGE = "Please Enter a valid Quantity";
+    var QUANTITY_NOT_AVAILABLE_MESSAGE = "Quantity Not Available for Checkout";
 
     // ERROR TYPES (RETURNED BY SAILS ON DATABASE ENTRY)
     var VALIDATION_ERROR_TYPE = "E_VALIDATION";
@@ -101,10 +103,17 @@ function logShipment(req, res) {
                     returnObject.message = INVALID_VENDOR_ID_MESSAGE;
                     return res.badRequest(returnObject);
                 } else {
+
+                    if (transaction_type == "OUT" && quantity > product.quantity) {
+                        returnObject.statusCode = QUANTITY_NOT_AVAILABLE_CODE;
+                        returnObject.message = QUANTITY_NOT_AVAILABLE_MESSAGE;
+                        return res.json(returnObject);
+                    }
+
                     ShipmentLog.create({
                         product: product_id,
                         vendor: vendor_id,
-                        user: 1,
+                        user: req.token.id,
                         quantity: quantity,
                         transaction_type: transaction_type
                     }).exec(function(err, shipment) {
@@ -116,7 +125,23 @@ function logShipment(req, res) {
                             returnObject.shipment = shipment;
                             returnObject.statusCode = SHIPMENT_LOGGED_SUCCESSFULLY_CODE;
                             returnObject.message = SHIPMENT_LOGGED_SUCCESSFULLY_MESSAGE;
-                            return res.json(returnObject);
+
+
+                            if (transaction_type == "IN") {
+                                product.quantity = product.quantity + quantity;
+                            } else {
+                                product.quantity = product.quantity - quantity;
+                            }
+
+                            product.save(function(err) {
+                                if (err) {
+                                    returnObject.statusCode = SERVER_ERROR_RETURN_CODE;
+                                    returnObject.message = SERVER_ERROR_MESSAGE;
+                                    return res.badRequest(returnObject);
+                                } else {
+                                    return res.json(returnObject);
+                                }
+                            })
                         }
                     })
                 }

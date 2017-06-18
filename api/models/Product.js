@@ -40,6 +40,11 @@ module.exports = {
     type: {
       model: 'producttype',
       required: true
+    },
+
+    created_by: {
+      model: 'users',
+      required: true
     }
 
   },
