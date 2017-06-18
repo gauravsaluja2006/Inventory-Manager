@@ -20,8 +20,18 @@ module.exports = {
       required: true
     },
 
+    vendor: {
+      model: 'vendors',
+      required: true
+    },
+
     user: {
       model: "users",
+      required: true
+    },
+
+    quantity: {
+      type: 'integer',
       required: true
     },
 
