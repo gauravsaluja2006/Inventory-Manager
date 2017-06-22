@@ -6,6 +6,7 @@
  */
 
 module.exports = {
+    editProductType: editProductType,
 	createNewProductType: createNewProductType,
     getAllProductTypeList: getAllProductTypeList
 };
@@ -106,4 +107,67 @@ function getAllProductTypeList(req, res) {
         return res.json(returnObject);
         
     })
+}
+
+function editProductType(req, res) {
+
+    var returnObject = {
+        statusCode: null,
+        message: null
+    };
+
+    // RETURN STATUS CODES
+    var PRODUCT_TYPE_UPDATED_CODE = 1;
+    var SERVER_ERROR_CODE = 2;
+    var MISSING_PRODUCT_TYPE_ID_CODE = 3;
+    var MISSING_CHANGE_PARAMETER_CODE = 4;
+
+    // MESSAGES
+    var PRODUCT_TYPE_UPDATED_MESSAGE = "Product Type Details Updated Successfully";
+    var SERVER_ERROR_MESSAGE = "Some Error Occurred";
+    var MISSING_PRODUCT_TYPE_ID_MESSAGE = "Please specify a valid Product Type ID";
+    var MISSING_CHANGE_PARAMETER_MESSAGE = "Please specify name or description";
+
+    var product_type_id = req.body.product_type_id;
+
+    if(!req.body.name && !req.body.description) {
+        returnObject.statusCode = MISSING_CHANGE_PARAMETER_CODE;
+        returnObject.message = MISSING_CHANGE_PARAMETER_MESSAGE;
+        return res.json(returnObject);
+    }
+
+    ProductType.findOne({id: product_type_id}).exec(function(err, type) {
+        if(err) {
+            returnObject.statusCode = SERVER_ERROR_CODE;
+            returnObject.message = SERVER_ERROR_MESSAGE;
+            return res.badRequest(returnObject);
+        } else if (!type) {
+            returnObject.statusCode = MISSING_PRODUCT_TYPE_ID_CODE;
+            returnObject.message = MISSING_PRODUCT_TYPE_ID_MESSAGE;
+            return res.json(returnObject);
+        } else {
+            if(req.body.name) {
+                type.name = req.body.name;
+            }
+
+            if(req.body.description) {
+                type.description = req.body.description;
+            }
+
+            type.save(function(err) {
+                if(err) {
+                    returnObject.statusCode = SERVER_ERROR_CODE;
+                    returnObject.message = SERVER_ERROR_MESSAGE;
+                    return res.badRequest(returnObject);
+                } else {
+                    returnObject.statusCode = PRODUCT_TYPE_UPDATED_CODE;
+                    returnObject.message = PRODUCT_TYPE_UPDATED_MESSAGE;
+                    res.json(returnObject);
+                }
+            })
+        }
+    })
+
+    
+
 }
