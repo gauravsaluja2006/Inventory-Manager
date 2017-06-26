@@ -7,7 +7,8 @@
 
 module.exports = {
 	createNewProduct: createNewProduct,
-    getAllProductList: getAllProductList
+    getAllProductList: getAllProductList,
+    deleteProduct: deleteProduct
 };
 
 // FUNCTION TO HANDLE REQUEST TO CREATE A NEW PRODUCT
@@ -142,5 +143,42 @@ function getAllProductList(req, res) {
         returnObject.products = products;
         return res.json(returnObject);
         
+    })
+}
+
+function deleteProduct(req, res) {
+
+    returnObject = {
+        statusCode: null,
+        message: null
+    };
+
+    var MISSING_ID_CODE = 1;
+    var SERVER_ERROR_CODE = 2;
+    var DELETE_SUCCESS_CODE = 3;
+
+    var MISSING_ID_MESSAGE = "Please enter a valid Product ID";
+    var SERVER_ERROR_MESSAGE = "Server Error Occured";
+    var DELETE_SUCCESS_MESSAGE = "Product Deleted Successfully";
+
+    var delete_id = req.body.product_id;
+
+    // INVALID INPUT PARAMETERS
+    if (isNaN(delete_id)) {
+        returnObject.statusCode = MISSING_ID_CODE;
+        returnObject.message = MISSING_ID_MESSAGE;
+        return res.json(returnObject); 
+    }
+
+    Product.destroy({ id: delete_id }).exec(function(err) {
+        if (err) {
+            returnObject.statusCode = SERVER_ERROR_CODE;
+            returnObject.message = SERVER_ERROR_MESSAGE;
+            return res.json(returnObject); 
+        } else {
+            returnObject.statusCode = DELETE_SUCCESS_CODE;
+            returnObject.message = DELETE_SUCCESS_MESSAGE;
+            return res.json(returnObject); 
+        }
     })
 }

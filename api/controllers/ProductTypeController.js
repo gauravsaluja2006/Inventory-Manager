@@ -7,8 +7,9 @@
 
 module.exports = {
     editProductType: editProductType,
-	createNewProductType: createNewProductType,
-    getAllProductTypeList: getAllProductTypeList
+    createNewProductType: createNewProductType,
+    getAllProductTypeList: getAllProductTypeList,
+    suspendProductType: suspendProductType
 };
 
 // FUNCTION TO HANDLE REQUEST TO CREATE A NEW PRODUCT TYPE
@@ -28,7 +29,7 @@ function createNewProductType(req, res) {
     var SERVER_ERROR_RETURN_CODE = 2;
     var MISSING_PRODUCT_TYPE_NAME_CODE = 3;
     var MISSING_PRODUCT_TYPE_DESCRIPTION_CODE = 4;
-    
+
 
     // MESSAGES
     var PRODUCT_TYPE_CREATED_SUCCESS_MESSAGE = "Product Type Created Successfully";
@@ -89,7 +90,7 @@ function createNewProductType(req, res) {
             returnObject.statusCode = PRODUCT_TYPE_CREATED_SUCCESSFULLY_CODE;
             returnObject.message = PRODUCT_TYPE_CREATED_SUCCESS_MESSAGE;
             return res.json(returnObject);
-        
+
         }
     })
 }
@@ -105,8 +106,63 @@ function getAllProductTypeList(req, res) {
 
         returnObject.productTypes = productTypes;
         return res.json(returnObject);
-        
+
     })
+}
+
+function suspendProductType(req, res) {
+
+    var returnObject = {
+        statusCode: null,
+        message: null
+    };
+
+    var PRODUCT_TYPE_SUSPENDED_CODE = 1;
+    var SERVER_ERROR_CODE = 2;
+    var MISSING_PRODUCT_TYPE_ID_CODE = 3;
+    var PRODUCT_TYPE_NOT_FOUND_CODE = 4;
+
+    var PRODUCT_TYPE_SUSPENDED_MESSAGE = "Product Type Suspended";
+    var SERVER_ERROR_MESSAGE = "Some Error Occured";
+    var MISSING_PRODUCT_TYPE_ID_MESSAGE = "Please Enter a valid Product Type ID";
+    var PRODUCT_TYPE_NOT_FOUND_MESSAGE = "Product Type with given ID not found";
+
+    if (isNaN(req.body.product_type_id)) {
+        returnObject.statusCode = MISSING_PRODUCT_TYPE_ID_CODE;
+        returnObject.message = MISSING_PRODUCT_TYPE_ID_MESSAGE;
+        return res.json(returnObject);
+    }
+
+    var product_type_id = req.body.product_type_id;
+
+    ProductType.findOne({ id: product_type_id }).exec(function(err, type) {
+        if (err) {
+            returnObject.statusCode = SERVER_ERROR_CODE;
+            returnObject.message = SERVER_ERROR_MESSAGE;
+            return res.badRequest(returnObject);
+        } else if (!type) {
+            returnObject.statusCode = PRODUCT_TYPE_NOT_FOUND_CODE;
+            returnObject.message = PRODUCT_TYPE_NOT_FOUND_MESSAGE;
+            return res.json(returnObject);
+        } else {
+
+            type.is_active = false;
+
+            type.save(function(err) {
+                if (err) {
+                    returnObject.statusCode = SERVER_ERROR_CODE;
+                    returnObject.message = SERVER_ERROR_MESSAGE;
+                    return res.badRequest(returnObject);
+                } else {
+                    returnObject.statusCode = PRODUCT_TYPE_SUSPENDED_CODE;
+                    returnObject.message = PRODUCT_TYPE_SUSPENDED_MESSAGE;
+                    res.json(returnObject);
+                }
+            })
+        }
+    })
+
+
 }
 
 function editProductType(req, res) {
@@ -130,14 +186,14 @@ function editProductType(req, res) {
 
     var product_type_id = req.body.product_type_id;
 
-    if(!req.body.name && !req.body.description) {
+    if (!req.body.name && !req.body.description) {
         returnObject.statusCode = MISSING_CHANGE_PARAMETER_CODE;
         returnObject.message = MISSING_CHANGE_PARAMETER_MESSAGE;
         return res.json(returnObject);
     }
 
-    ProductType.findOne({id: product_type_id}).exec(function(err, type) {
-        if(err) {
+    ProductType.findOne({ id: product_type_id }).exec(function(err, type) {
+        if (err) {
             returnObject.statusCode = SERVER_ERROR_CODE;
             returnObject.message = SERVER_ERROR_MESSAGE;
             return res.badRequest(returnObject);
@@ -146,16 +202,16 @@ function editProductType(req, res) {
             returnObject.message = MISSING_PRODUCT_TYPE_ID_MESSAGE;
             return res.json(returnObject);
         } else {
-            if(req.body.name) {
+            if (req.body.name) {
                 type.name = req.body.name;
             }
 
-            if(req.body.description) {
+            if (req.body.description) {
                 type.description = req.body.description;
             }
 
             type.save(function(err) {
-                if(err) {
+                if (err) {
                     returnObject.statusCode = SERVER_ERROR_CODE;
                     returnObject.message = SERVER_ERROR_MESSAGE;
                     return res.badRequest(returnObject);
@@ -168,6 +224,6 @@ function editProductType(req, res) {
         }
     })
 
-    
+
 
 }

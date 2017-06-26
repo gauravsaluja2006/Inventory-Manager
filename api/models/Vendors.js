@@ -28,6 +28,12 @@ module.exports = {
         created_by: {
             model: 'users',
             required: true
+        },
+
+        is_active: {
+            type: "boolean",
+            required: false,
+            defaultsTo: true
         }
 
     }

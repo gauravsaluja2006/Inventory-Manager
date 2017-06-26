@@ -7,10 +7,12 @@
 
 module.exports = {
 	getAllVendorsList: getAllVendorsList,
-    createNewVendor: createNewVendor
+    createNewVendor: createNewVendor,
+    editVendor: editVendor,
+    suspendVendor: suspendVendor
 };
 
-// FUNCTION TO HANDLE REQUEST TO CREATE A NEW PRODUCT TYPE
+// FUNCTION TO HANDLE REQUEST TO CREATE A NEW VENDOR
 // @param: name
 function createNewVendor(req, res) {
 
@@ -45,7 +47,7 @@ function createNewVendor(req, res) {
 
     var vendor_name = req.body.name.trim();
     
-    // CREATING NEW PRODUCT TYPE
+    // CREATING NEW VENDOR
     Vendors.create({
         'name': vendor_name,
         'phone': req.body.phone,
@@ -153,4 +155,59 @@ function editVendor(req, res) {
             })
         }
     })
+}
+
+function suspendVendor(req, res) {
+
+    var returnObject = {
+        statusCode: null,
+        message: null
+    };
+
+    var VENDOR_SUSPENDED_CODE = 1;
+    var SERVER_ERROR_CODE = 2;
+    var MISSING_VENDOR_ID_CODE = 3;
+    var VENDOR_NOT_FOUND_CODE = 4;
+
+    var VENDOR_SUSPENDED_MESSAGE = "Vendor Suspended";
+    var SERVER_ERROR_MESSAGE = "Some Error Occured";
+    var MISSING_VENDOR_ID_MESSAGE = "Please Enter a valid Vendor ID";
+    var VENDOR_NOT_FOUND_MESSAGE = "Vendor with given ID not found";
+
+    if (isNaN(req.body.vendor_id)) {
+        returnObject.statusCode = MISSING_VENDOR_ID_CODE;
+        returnObject.message = MISSING_VENDOR_ID_MESSAGE;
+        return res.json(returnObject);
+    }
+
+    var vendor_id = req.body.vendor_id;
+
+    Vendors.findOne({ id: vendor_id }).exec(function(err, vendor) {
+        if (err) {
+            returnObject.statusCode = SERVER_ERROR_CODE;
+            returnObject.message = SERVER_ERROR_MESSAGE;
+            return res.badRequest(returnObject);
+        } else if (!vendor) {
+            returnObject.statusCode = VENDOR_NOT_FOUND_CODE;
+            returnObject.message = VENDOR_NOT_FOUND_MESSAGE;
+            return res.json(returnObject);
+        } else {
+
+            vendor.is_active = false;
+
+            vendor.save(function(err) {
+                if (err) {
+                    returnObject.statusCode = SERVER_ERROR_CODE;
+                    returnObject.message = SERVER_ERROR_MESSAGE;
+                    return res.badRequest(returnObject);
+                } else {
+                    returnObject.statusCode = VENDOR_SUSPENDED_CODE;
+                    returnObject.message = VENDOR_SUSPENDED_MESSAGE;
+                    res.json(returnObject);
+                }
+            })
+        }
+    })
+
+
 }
