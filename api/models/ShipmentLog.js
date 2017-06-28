@@ -7,40 +7,39 @@
 
 module.exports = {
 
-  attributes: {
+    attributes: {
 
-    id: {
-      type: 'integer',
-      autoIncrement: true,
-      primaryKey: true
-    },
+        id: {
+            type: 'integer',
+            autoIncrement: true,
+            primaryKey: true
+        },
 
-    product: {
-      model: "product",
-      required: true
-    },
+        product: {
+            model: "product",
+            required: true
+        },
 
-    vendor: {
-      model: 'vendors',
-      required: true
-    },
+        vendor: {
+            model: 'vendors',
+            required: false
+        },
 
-    user: {
-      model: "users",
-      required: true
-    },
+        user: {
+            model: "users",
+            required: true
+        },
 
-    quantity: {
-      type: 'integer',
-      required: true
-    },
+        quantity: {
+            type: 'integer',
+            required: true
+        },
 
-    // (IN or OUT)
-    transaction_type: {
-      type: "string",
-      required: true
+        // (IN or OUT)
+        transaction_type: {
+            type: "string",
+            required: true
+        }
+
     }
-
-  }
 };
-
