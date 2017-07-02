@@ -25,6 +25,16 @@ module.exports = {
             required: false
         },
 
+        address: {
+            type: 'longtext',
+            required: false
+        },
+
+        tin: {
+            type: 'string',
+            required: false
+        },
+
         created_by: {
             model: 'users',
             required: true

@@ -6,7 +6,7 @@
  */
 
 module.exports = {
-	getAllVendorsList: getAllVendorsList,
+    getAllVendorsList: getAllVendorsList,
     createNewVendor: createNewVendor,
     editVendor: editVendor,
     suspendVendor: suspendVendor
@@ -27,13 +27,13 @@ function createNewVendor(req, res) {
     var VENDOR_CREATED_SUCCESSFULLY_CODE = 1;
     var SERVER_ERROR_RETURN_CODE = 2;
     var MISSING_VENDOR_NAME_CODE = 3;
-    
+
 
     // MESSAGES
     var VENDOR_CREATED_SUCCESS_MESSAGE = "New Vendor Created Successfully";
     var SERVER_ERROR_MESSAGE = "Some error occured";
     var MISSING_VENDOR_NAME_MESSAGE = "Please provide a name for the Vendor";
-    
+
 
     // ERROR TYPES (RETURNED BY SAILS ON DATABASE ENTRY)
     var VALIDATION_ERROR_TYPE = "E_VALIDATION";
@@ -46,7 +46,7 @@ function createNewVendor(req, res) {
     }
 
     var vendor_name = req.body.name.trim();
-    
+
     // CREATING NEW VENDOR
     Vendors.create({
         'name': vendor_name,
@@ -78,7 +78,7 @@ function createNewVendor(req, res) {
             returnObject.statusCode = VENDOR_CREATED_SUCCESSFULLY_CODE;
             returnObject.message = VENDOR_CREATED_SUCCESS_MESSAGE;
             return res.json(returnObject);
-        
+
         }
     })
 }
@@ -93,7 +93,7 @@ function getAllVendorsList(req, res) {
 
         returnObject.vendors = vendors;
         return res.json(returnObject);
-        
+
     })
 }
 
@@ -118,14 +118,14 @@ function editVendor(req, res) {
 
     var vendor_id = req.body.vendor_id;
 
-    if(!req.body.name && !req.body.phone) {
+    if (!req.body.name && !req.body.phone && !req.body.tin && !req.body.address) {
         returnObject.statusCode = MISSING_CHANGE_PARAMETER_CODE;
         returnObject.message = MISSING_CHANGE_PARAMETER_MESSAGE;
         return res.json(returnObject);
     }
 
-    Vendors.findOne({id: vendor_id}).exec(function(err, vendor) {
-        if(err) {
+    Vendors.findOne({ id: vendor_id }).exec(function(err, vendor) {
+        if (err) {
             returnObject.statusCode = SERVER_ERROR_CODE;
             returnObject.message = SERVER_ERROR_MESSAGE;
             return res.badRequest(returnObject);
@@ -134,16 +134,24 @@ function editVendor(req, res) {
             returnObject.message = MISSING_VENDOR_ID_MESSAGE;
             return res.json(returnObject);
         } else {
-            if(req.body.name) {
+            if (req.body.name) {
                 vendor.name = req.body.name;
             }
 
-            if(req.body.description) {
+            if (req.body.description) {
                 vendor.description = req.body.description;
             }
 
+            if (req.body.tin) {
+                vendor.tin = req.body.tin;
+            }
+
+            if (req.body.address) {
+                vendor.address = req.body.address;
+            }
+
             vendor.save(function(err) {
-                if(err) {
+                if (err) {
                     returnObject.statusCode = SERVER_ERROR_CODE;
                     returnObject.message = SERVER_ERROR_MESSAGE;
                     return res.badRequest(returnObject);
