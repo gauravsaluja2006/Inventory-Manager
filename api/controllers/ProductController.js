@@ -6,9 +6,10 @@
  */
 
 module.exports = {
-	createNewProduct: createNewProduct,
+    createNewProduct: createNewProduct,
     getAllProductList: getAllProductList,
-    deleteProduct: deleteProduct
+    deleteProduct: deleteProduct,
+    editProduct: editProduct
 };
 
 // FUNCTION TO HANDLE REQUEST TO CREATE A NEW PRODUCT
@@ -33,7 +34,7 @@ function createNewProduct(req, res) {
     var MISSING_PRODUCT_DESCRIPTION_CODE = 4;
     var MISSING_PRODUCT_TYPE_CODE = 5;
     var INVALID_PRODUCT_TYPE_ID_CODE = 6;
-    
+
 
     // MESSAGES
     var PRODUCT_CREATED_SUCCESS_MESSAGE = "Product Created Successfully";
@@ -73,9 +74,9 @@ function createNewProduct(req, res) {
     var product_type = parseInt(req.body.type);
 
 
-    ProductType.findOne({id: product_type}).exec(function(err, product_type) {
+    ProductType.findOne({ id: product_type }).exec(function(err, product_type) {
 
-        if(err) {
+        if (err) {
             returnObject.message = SERVER_ERROR_MESSAGE;
             returnObject.statusCode = SERVER_ERROR_RETURN_CODE;
             return res.badRequest(returnObject);
@@ -120,7 +121,7 @@ function createNewProduct(req, res) {
                 returnObject.statusCode = PRODUCT_CREATED_SUCCESSFULLY_CODE;
                 returnObject.message = PRODUCT_CREATED_SUCCESS_MESSAGE;
                 return res.json(returnObject);
-            
+
             }
         })
 
@@ -142,7 +143,7 @@ function getAllProductList(req, res) {
 
         returnObject.products = products;
         return res.json(returnObject);
-        
+
     })
 }
 
@@ -181,4 +182,72 @@ function deleteProduct(req, res) {
             return res.json(returnObject); 
         }
     })
+}
+
+function editProduct(req, res) {
+
+    var returnObject = {
+        statusCode: null,
+        message: null
+    };
+
+    // RETURN STATUS CODES
+    var PRODUCT_UPDATED_CODE = 1;
+    var SERVER_ERROR_CODE = 2;
+    var MISSING_PRODUCT_ID_CODE = 3;
+    var MISSING_CHANGE_PARAMETER_CODE = 4;
+
+    // MESSAGES
+    var PRODUCT_UPDATED_MESSAGE = "Product Details Updated Successfully";
+    var SERVER_ERROR_MESSAGE = "Some Error Occurred";
+    var MISSING_PRODUCT_ID_MESSAGE = "Please specify a valid Product ID";
+    var MISSING_CHANGE_PARAMETER_MESSAGE = "Please specify name or description";
+
+    var product_id = req.body.product_id;
+
+    if (!req.body.name && !req.body.description && !req.body.minimum_quantity) {
+        returnObject.statusCode = MISSING_CHANGE_PARAMETER_CODE;
+        returnObject.message = MISSING_CHANGE_PARAMETER_MESSAGE;
+        return res.json(returnObject);
+    }
+
+    Product.findOne({ id: product_id }).sort('id ASC').exec(function(err, product) {
+        if (err) {
+            returnObject.statusCode = SERVER_ERROR_CODE;
+            returnObject.message = SERVER_ERROR_MESSAGE;
+            return res.badRequest(returnObject);
+        } else if (!product) {
+            returnObject.statusCode = MISSING_PRODUCT_ID_CODE;
+            returnObject.message = MISSING_PRODUCT_ID_MESSAGE;
+            return res.json(returnObject);
+        } else {
+
+            if (req.body.name) {
+                product.name = req.body.name;
+            }
+
+            if (req.body.description) {
+                product.description = req.body.description;
+            }
+
+            if (req.body.minimum_quantity) {
+                product.minimum_quantity = req.body.minimum_quantity;
+            }
+
+            product.save(function(err) {
+                if (err) {
+                    returnObject.statusCode = SERVER_ERROR_CODE;
+                    returnObject.message = SERVER_ERROR_MESSAGE;
+                    return res.badRequest(returnObject);
+                } else {
+                    returnObject.statusCode = PRODUCT_UPDATED_CODE;
+                    returnObject.message = PRODUCT_UPDATED_MESSAGE;
+                    res.json(returnObject);
+                }
+            })
+        }
+    })
+
+
+
 }

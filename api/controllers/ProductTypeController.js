@@ -192,7 +192,7 @@ function editProductType(req, res) {
         return res.json(returnObject);
     }
 
-    ProductType.findOne({ id: product_type_id }).exec(function(err, type) {
+    ProductType.findOne({ id: product_type_id }).sort('id ASC').exec(function(err, type) {
         if (err) {
             returnObject.statusCode = SERVER_ERROR_CODE;
             returnObject.message = SERVER_ERROR_MESSAGE;
