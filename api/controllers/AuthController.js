@@ -58,7 +58,7 @@ function login(req, res) {
             returnObject.statusCode = INVALID_USERNAME_OR_PASSWORD_CODE;
             returnObject.message = INVALID_USERNAME_OR_PASSWORD_MESSAGE;
 
-            return res.badRequest(returnObject);
+            return res.json(returnObject);
 
         } else {
 
@@ -84,7 +84,7 @@ function login(req, res) {
                     returnObject.statusCode = INVALID_USERNAME_OR_PASSWORD_CODE;
                     returnObject.message = INVALID_USERNAME_OR_PASSWORD_MESSAGE;
 
-                    return res.badRequest(returnObject);
+                    return res.json(returnObject);
 
                 }
             });
