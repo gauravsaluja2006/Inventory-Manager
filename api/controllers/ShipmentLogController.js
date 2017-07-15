@@ -6,7 +6,8 @@
  */
 
 module.exports = {
-    logShipment: logShipment
+    logShipment: logShipment,
+    getShipmentHistory: getShipmentHistory
 };
 
 // FUNCTION TO HANDLE REQUEST TO LOG A SHIPMENT INFORMATION
@@ -150,4 +151,27 @@ function logShipment(req, res) {
         }
     })
 
+}
+
+
+function getShipmentHistory(req, res) {
+    ShipmentLog.find().populate('user').populate('vendor').populate('product').exec(function(err, shipments) {
+        shipList = [];
+        for(var shipment of shipments) {
+            shipList.push({
+                id: shipment.id,
+                quantity: shipment.quantity,
+                transaction_type: shipment.transaction_type,
+                product_name: shipment.product.name,
+                product_description: shipment.product.description,
+                vendor_name: shipment.vendor.name,
+                vendor_tin: shipment.vendor.tin,
+                username: shipment.user.username,
+                product_id: shipment.product.id,
+                vendor_id: shipment.vendor.id,
+                user_id: shipment.user.id
+            });
+        }
+        res.json(shipList);
+    })
 }
