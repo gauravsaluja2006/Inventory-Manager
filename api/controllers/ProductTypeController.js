@@ -15,6 +15,7 @@ module.exports = {
 // FUNCTION TO HANDLE REQUEST TO CREATE A NEW PRODUCT TYPE
 // @param: name
 // @param: description
+// @param: category
 function createNewProductType(req, res) {
 
     // RETURN OBJECT STRUCTURE
@@ -29,6 +30,7 @@ function createNewProductType(req, res) {
     var SERVER_ERROR_RETURN_CODE = 2;
     var MISSING_PRODUCT_TYPE_NAME_CODE = 3;
     var MISSING_PRODUCT_TYPE_DESCRIPTION_CODE = 4;
+    var MISSING_PRODUCT_TYPE_CATEGORY_CODE = 5;
 
 
     // MESSAGES
@@ -36,6 +38,7 @@ function createNewProductType(req, res) {
     var SERVER_ERROR_MESSAGE = "Some error occured";
     var MISSING_PRODUCT_TYPE_NAME_MESSAGE = "Please provide a name for the Product Type";
     var MISSING_PRODUCT_TYPE_DESCRIPTION_MESSAGE = "Please provide description for the Product Type";
+    var MISSING_PRODUCT_TYPE_CATEGORY_MESSAGE = "Please specify Category Group";
 
 
     // ERROR TYPES (RETURNED BY SAILS ON DATABASE ENTRY)
@@ -54,14 +57,22 @@ function createNewProductType(req, res) {
         return res.badRequest(returnObject);
     }
 
+    if (isNaN(req.body.category)) {
+        returnObject.statusCode = MISSING_PRODUCT_TYPE_CATEGORY_CODE;
+        returnObject.message = MISSING_PRODUCT_TYPE_CATEGORY_MESSAGE;
+        return res.badRequest(returnObject);
+    }
+
     var product_type_name = req.body.name.trim();
     var product_type_description = req.body.description.trim();
+    var product_type_category = parseInt(req.body.category);
 
 
     // CREATING NEW PRODUCT TYPE
     ProductType.create({
         'name': product_type_name,
         'description': product_type_description,
+        'category': product_type_category,
         'created_by': req.token.id
     }).exec(function(err, newProductType) {
 

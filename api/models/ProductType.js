@@ -25,6 +25,10 @@ module.exports = {
       collection: "product",
       via: "type"
     },
+    category: {
+      model: 'categorygroup',
+      required: true
+    },
     created_by: {
       model: 'users',
       required: true
@@ -45,6 +49,9 @@ module.exports = {
       type: 'Please enter Product Description',
       required: 'Please enter Product Description'
     },
+    category: {
+      required: 'Please specify Category Group'
+    }
   }
 };
 
