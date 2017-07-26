@@ -51,6 +51,8 @@ function createNewVendor(req, res) {
     Vendors.create({
         'name': vendor_name,
         'phone': req.body.phone,
+        'tin': req.body.tin,
+        'address': req.body.address,
         'created_by': req.token.id
     }).exec(function(err, newVendor) {
 

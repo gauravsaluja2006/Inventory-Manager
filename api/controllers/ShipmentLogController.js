@@ -111,10 +111,12 @@ function logShipment(req, res) {
                         return res.json(returnObject);
                     }
 
+                    console.log("Creating shipment for user: ", req.token);
+
                     ShipmentLog.create({
                         product: product_id,
                         vendor: vendor_id,
-                        user: req.token.id,
+                        user_id: req.token.id,
                         quantity: quantity,
                         transaction_type: transaction_type
                     }).exec(function(err, shipment) {
@@ -155,7 +157,7 @@ function logShipment(req, res) {
 
 
 function getShipmentHistory(req, res) {
-    ShipmentLog.find().populate('user').populate('vendor').populate('product').exec(function(err, shipments) {
+    ShipmentLog.find().populate('user_id').populate('vendor').populate('product').exec(function(err, shipments) {
         shipList = [];
         for(var shipment of shipments) {
             shipList.push({
@@ -166,10 +168,10 @@ function getShipmentHistory(req, res) {
                 product_description: shipment.product.description,
                 vendor_name: shipment.vendor.name,
                 vendor_tin: shipment.vendor.tin,
-                username: shipment.user.username,
+                username: shipment.user_id.username,
                 product_id: shipment.product.id,
                 vendor_id: shipment.vendor.id,
-                user_id: shipment.user.id
+                user_id: shipment.user_id.id
             });
         }
         res.json(shipList);

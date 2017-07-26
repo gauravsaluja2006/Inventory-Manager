@@ -25,7 +25,7 @@ module.exports = {
             required: false
         },
 
-        user: {
+        user_id: {
             model: "users",
             required: true
         },
